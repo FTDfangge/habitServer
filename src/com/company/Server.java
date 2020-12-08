@@ -1,5 +1,6 @@
 package com.company;
 
+import javax.xml.crypto.Data;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -61,6 +62,81 @@ public class Server {
                         System.out.println("服务端 finally 异常:" + e.getMessage());
                     }
                 }
+            }
+        }
+    }
+
+    public class SendAndRcvMsg implements Runnable{
+        private Socket socket;
+
+        public SendAndRcvMsg(Socket client){
+            socket = client;
+            new Thread(this).start();
+        }
+
+        @Override
+        public void run() {
+            try {
+                // 读取客户端数据
+                DataInputStream input = new DataInputStream(socket.getInputStream());
+                String clientInputStr = input.readUTF();//这里要注意和客户端输出流的写方法对应,否则会抛 EOFException
+                // 处理客户端数据
+                System.out.println("客户端发过来的内容:" + clientInputStr);
+
+                String [] arr = clientInputStr.split("\\s+");
+                switch (arr[0]){
+                    case "check" :{
+
+                        break;
+                    }
+                    case "reg":{
+
+                        break;
+                    }
+                    case "login":{
+
+                        break;
+                    }
+                    case "selectH":{
+
+                        break;
+                    }
+                    case "DAKA":{
+
+                        break;
+                    }
+                    case "getDAKAList":{
+
+                        break;
+                    }
+                    default:{
+                        this.sendToClient("Wrong input type");
+                        break;
+                    }
+                }
+
+                input.close();
+            } catch (Exception e) {
+                System.out.println("服务器 run 异常: " + e.getMessage());
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (Exception e) {
+                        socket = null;
+                        System.out.println("服务端 finally 异常:" + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        public void sendToClient(String msg){
+            try {
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                out.writeUTF(msg);
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
